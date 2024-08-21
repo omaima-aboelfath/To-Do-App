@@ -5,6 +5,7 @@ import 'package:to_do_app/app_colors.dart';
 import 'package:to_do_app/firebase_utils.dart';
 // import 'package:to_do_app/home/task_list/edit_task.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:to_do_app/home/task_list/edit_task.dart';
 import 'package:to_do_app/model/task.dart';
 import 'package:to_do_app/providers/list_provider.dart';
 
@@ -45,16 +46,18 @@ class TaskListItem extends StatelessWidget {
               label: 'delete',
               // label: AppLocalizations.of(context)!.delete,
             ),
-            // SlidableAction(
-            //   borderRadius: BorderRadius.circular(15),
-            //   onPressed: (context) {
-            //     // edit task
-            //   },
-            //   backgroundColor: AppColors.greyColor,
-            //   foregroundColor: AppColors.whiteColor,
-            //   icon: Icons.edit,
-            //   label: AppLocalizations.of(context)!.edit,
-            // ),
+            SlidableAction(
+              borderRadius: BorderRadius.circular(15),
+              onPressed: (context) {
+                // edit task
+                // Navigator.pushNamed(context, EditTask.routeName);
+              },
+              backgroundColor: AppColors.greyColor,
+              foregroundColor: AppColors.whiteColor,
+              icon: Icons.edit,
+              label: 'edit',
+              // label: AppLocalizations.of(context)!.edit,
+            ),
           ],
         ),
         child: Container(

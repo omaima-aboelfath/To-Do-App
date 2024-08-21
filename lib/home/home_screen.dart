@@ -7,7 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  static const String route = 'home_screen';
+  static const String routeName = 'home_screen';
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
