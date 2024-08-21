@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:to_do_app/app_colors.dart';
 import 'package:to_do_app/home/settings/settings_tab.dart';
 import 'package:to_do_app/home/task_list/add_task_bottom_sheet.dart';
-import 'package:to_do_app/home/task_list/task_list.dart';
+import 'package:to_do_app/home/task_list/task_list_tab.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 

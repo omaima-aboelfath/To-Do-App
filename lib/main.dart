@@ -1,15 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_app/home/home_screen.dart';
 import 'package:to_do_app/my_theme_data.dart';
 import 'package:to_do_app/providers/app_config_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-void main() {
-  runApp(
+import 'package:firebase_core/firebase_core.dart';
+import 'package:to_do_app/providers/list_provider.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FirebaseFirestore.instance.disableNetwork();
+
+  runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-      create: (context) => AppConfigProvider(), 
-      child: MyApp())
-      );
+      create: (context) => AppConfigProvider(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => ListProvider(),
+    )
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -25,17 +39,17 @@ class MyApp extends StatelessWidget {
       routes: {
         HomeScreen.route: (context) => HomeScreen(),
       },
-  //     localizationsDelegates: const [
-  //   // Add the localization delegates here
-  //   GlobalMaterialLocalizations.delegate,
-  //   GlobalWidgetsLocalizations.delegate,
-  //   GlobalCupertinoLocalizations.delegate,
-  // ],
-  // supportedLocales: const [
-  //   // Add the supported locales here
-  //   Locale('en'), 
-  //   Locale('ar'), 
-  // ],
+      //     localizationsDelegates: const [
+      //   // Add the localization delegates here
+      //   GlobalMaterialLocalizations.delegate,
+      //   GlobalWidgetsLocalizations.delegate,
+      //   GlobalCupertinoLocalizations.delegate,
+      // ],
+      // supportedLocales: const [
+      //   // Add the supported locales here
+      //   Locale('en'),
+      //   Locale('ar'),
+      // ],
       theme: MyThemeData.lightTheme,
       darkTheme: MyThemeData.darkTheme,
       // themeMode: ThemeMode.light, //اتحكم ف المود اللي هيشتغل

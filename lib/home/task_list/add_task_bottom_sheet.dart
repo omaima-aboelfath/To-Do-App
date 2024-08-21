@@ -1,15 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:to_do_app/app_colors.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:to_do_app/firebase_utils.dart';
+import 'package:to_do_app/model/task.dart';
+import 'package:to_do_app/providers/list_provider.dart';
 
-class AddTaskBottomSheet extends StatelessWidget {
+class AddTaskBottomSheet extends StatefulWidget {
+  @override
+  State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
+}
+
+class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   String title = '';
+
   String description = '';
+
   var formKey = GlobalKey<FormState>();
+
+  DateTime selectDate = DateTime.now(); // or var
+
+  // because we haven't initial value because we need context so will set it late
+  late ListProvider listProvider; // global
 
   @override
   Widget build(BuildContext context) {
+    // update value
+    listProvider = Provider.of<ListProvider>(context);
+    // Create a DateFormat object with the desired pattern
+    DateFormat dateFormat = DateFormat('d - M - yyyy');
+
+    // Format the date
+    String formattedDate = dateFormat.format(selectDate);
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsets.all(15),
@@ -74,6 +99,11 @@ class AddTaskBottomSheet extends StatelessWidget {
                                     .enter_your_task_description,
                             labelStyle:
                                 Theme.of(context).textTheme.displaySmall),
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.whiteColor
+                              : AppColors.blackColor,
+                        ),
                         maxLines: 3,
                       ),
                     ),
@@ -100,15 +130,21 @@ class AddTaskBottomSheet extends StatelessWidget {
                       ),
                     ),
                     Center(
-                      child: Text(
-                        '8 - 9 - 2024',
-                        style: GoogleFonts.inter(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w400,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.greyColor
-                                    : AppColors.blackColor),
+                      child: InkWell(
+                        onTap: () {
+                          showCalender();
+                        },
+                        child: Text(
+                          formattedDate,
+                          // '${selectDate.day} - ${selectDate.month} - ${selectDate.year}',
+                          style: GoogleFonts.inter(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w400,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.greyColor
+                                  : AppColors.blackColor),
+                        ),
                       ),
                     ),
                     FloatingActionButton(
@@ -132,6 +168,40 @@ class AddTaskBottomSheet extends StatelessWidget {
   void addTask() {
     // validate() has forloop to loop on validators that i make
     // if we return string => invalid => validate will return false
-    if (formKey.currentState?.validate() == true) {}
+    if (formKey.currentState?.validate() == true) {
+      Task task =
+          Task(title: title, description: description, dateTime: selectDate);
+      FirebaseUtils.addTaskToFireStore(task).timeout(
+        // after one sec will print
+        Duration(seconds: 1),
+        onTimeout: () {
+          Navigator.pop(context); // to close bottomSheet after adding task
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Task added successfully')),
+          );
+          print('task added successfully');
+          print(task.id);
+          // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
+          listProvider
+              .getAllTasksFromFireStore(); // update list when clicking the button
+        },
+      );
+    }
+  }
+
+
+  Future<void> showCalender() async {
+    var chosenDate = await showDatePicker(
+        context: context,
+        // initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(Duration(days: 365)));
+    // if user chosen a date
+    if (chosenDate != null) {
+      selectDate = chosenDate;
+    }
+    // default val : if LHS(chosenDate) = null then put default val(DateTime.now) in selectDate
+    // selectDate = chosenDate ?? DateTime.now();
+    setState(() {});
   }
 }
