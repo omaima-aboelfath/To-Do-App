@@ -14,8 +14,9 @@ class ListProvider extends ChangeNotifier {
     // .get will return Future<QuerySnapshot<Task>> => return every thing in collection(docs) in firebase
     // use await on result because it returns => --Future--<QuerySnapshot<Task>>
     // use .snapshot instead of .get to apply realtime changes
-    var querySnapshot =
-        await FirebaseUtils.getTasksCollection().get(); //// get all tasks
+    var querySnapshot = await FirebaseUtils.getTasksCollection()
+        .orderBy('dateTime', descending: true)
+        .get(); //// get all tasks
     // we want to convert List<QueryDocumentSnapshot<Task>> => List<Task>
     // doc is object from List<QueryDocumentSnapshot<Task>>
     // map will convert every document snapshot into task
@@ -46,10 +47,10 @@ class ListProvider extends ChangeNotifier {
       },
     ).toList(); // Iterable<Task> => List<Task>
 
-    /// sorting - ordering based on which one added first
-    tasksList.sort((task1, Task task2) {
-      return task1.dateTime.compareTo(task2.dateTime);
-    });
+    // /// sorting - ordering based on which one added first
+    // tasksList.sort((task1, task2) {
+    //   return task1.dateTime.compareTo(task2.dateTime);
+    // });
 
     notifyListeners();
   }
@@ -65,6 +66,4 @@ class ListProvider extends ChangeNotifier {
   //   await FirebaseUtils.updateTaskFromFireStore(task);
   //   getAllTasksFromFireStore();
   // }
-
-
 }
