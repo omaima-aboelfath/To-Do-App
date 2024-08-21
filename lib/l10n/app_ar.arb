@@ -1,0 +1,16 @@
+{
+    "app_title" : "المهام",
+    "task_list" : "قائمة المهام",
+    "settings" : "الإعدادات",
+    "language" : "اللغة",
+    "english" : "الانجليزية",
+    "arabic" : "العربية",
+    "mode" : "الوضع",
+    "light" : "الفاتح",
+    "dark" : "الليلي",
+    "add_new_task" : "إضافة مهمة جديدة",
+    "select_date" : "حدد التاريخ",
+    "enter_your_task_title" : "ادخل عنوان المهمة الجديدة",
+    "enter_your_task_description" : "ادخل وصف المهمة الجديدة"
+
+}

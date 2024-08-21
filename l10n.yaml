@@ -1,0 +1,3 @@
+arb-dir: lib/l10n # المكان اللي هحط فيه كل الترجمات
+template-arb-file: app_en.arb #  الملف الخاص بترجمة الانجليزي او اي لغة
+output-localization-file: app_localizations.dart # الكود اللي هيتخلق هيروح ف الملف دا
