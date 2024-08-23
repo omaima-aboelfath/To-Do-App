@@ -3,9 +3,9 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_app/app_colors.dart';
 import 'package:to_do_app/firebase_utils.dart';
-// import 'package:to_do_app/home/task_list/edit_task.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-// import 'package:to_do_app/home/task_list/edit_task.dart';
+import 'package:to_do_app/home/task_list/add_task_bottom_sheet.dart';
+import 'package:to_do_app/home/task_list/edit_task.dart';
 import 'package:to_do_app/model/task.dart';
 import 'package:to_do_app/providers/list_provider.dart';
 
@@ -50,7 +50,18 @@ class TaskListItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               onPressed: (context) {
                 // edit task
-                // Navigator.pushNamed(context, EditTask.routeName);
+                Navigator.pushNamed(context, EditTask.routeName,
+                    arguments: task
+                    );
+
+                    // Task(
+                    //     title: task.title,
+                    //     description: task.description,
+                    //     dateTime: task.dateTime)
+                    // OR  {
+                    //   'title' : task.title,
+                    //   'description' : task.description
+                    // }
               },
               backgroundColor: AppColors.greyColor,
               foregroundColor: AppColors.whiteColor,
@@ -108,7 +119,9 @@ class TaskListItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15),
                       color: AppColors.primaryColor),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      
+                    },
                     icon: Icon(
                       Icons.check,
                       color: AppColors.whiteColor,

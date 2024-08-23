@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:to_do_app/home/auth/login_screen.dart';
 import 'package:to_do_app/home/auth/register_screen.dart';
 import 'package:to_do_app/home/home_screen.dart';
-// import 'package:to_do_app/home/task_list/edit_task.dart';
+import 'package:to_do_app/home/task_list/edit_task.dart';
 import 'package:to_do_app/my_theme_data.dart';
 import 'package:to_do_app/providers/app_config_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (context) => HomeScreen(),
         RegisterScreen.routeName: (context) => RegisterScreen(),
         LoginScreen.routeName: (context) => LoginScreen(),
-        // EditTask.routeName: (context) => EditTask(),
+        EditTask.routeName: (context) => EditTask(),
       },
       //     localizationsDelegates: const [
       //   // Add the localization delegates here

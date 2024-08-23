@@ -39,11 +39,11 @@ class FirebaseUtils {
   }
 
   // update -- edit
-  // static Future<void> updateTaskFromFireStore(Task task) {
-  //   return getTasksCollection().doc(task.id).update({
-  //     'title' : task.title,
-  //     'description' : task.description,
-  //     'dateTime' : task.dateTime
-  //   });
-  // }
+  static Future<void> updateTaskFromFireStore(Task task) {
+    return getTasksCollection().doc(task.id).update({
+      'title' : task.title,
+      'description' : task.description,
+      'dateTime' : task.dateTime
+    });
+  }
 }

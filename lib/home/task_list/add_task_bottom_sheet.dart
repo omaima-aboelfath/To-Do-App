@@ -10,6 +10,9 @@ import 'package:to_do_app/model/task.dart';
 import 'package:to_do_app/providers/list_provider.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
+  // late String title ;
+
+  // late String description ;
   @override
   State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
 }
