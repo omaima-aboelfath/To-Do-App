@@ -13,9 +13,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController emailController = TextEditingController();
+  TextEditingController emailController =
+      TextEditingController(text: "omaima@gmail.com");
 
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordController =
+      TextEditingController(text: '123456');
 
   var formKey = GlobalKey<FormState>(); // to access data of form
   bool _obscurePassword = true;
@@ -118,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.only(top: 0),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(
+                              Navigator.pushReplacementNamed(
                                   context, RegisterScreen.routeName);
                             },
                             child: Text(
@@ -152,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: AppColors.greenColor,
           ),
         );
-        Navigator.pushNamed(context, HomeScreen.routeName);
+        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
         // print user id and if not found print null
         print(credential.user?.uid ?? "");
         // }

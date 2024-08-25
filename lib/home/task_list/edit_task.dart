@@ -18,7 +18,6 @@ class _EditTaskState extends State<EditTask> {
   late TextEditingController detailsController;
 
   @override
-
   Widget build(BuildContext context) {
     // recieve arguments from TaskListItem class
     final args = ModalRoute.of(context)!.settings.arguments;
@@ -126,17 +125,22 @@ class _EditTaskState extends State<EditTask> {
             ),
             FloatingActionButton(
                 onPressed: () {
-                  // SnackBar(
-                  //   content: Text('Task updated successfully'),
-                  //   backgroundColor: AppColors.greenColor,
-                  // );
                   // Update the task with new data
                   task.title = titleController.text;
                   task.description = detailsController.text;
                   task.dateTime = selectDate;
 
                   // Call updateTaskFromFireStore method
-                  FirebaseUtils.updateTaskFromFireStore(task);
+                  FirebaseUtils.updateTaskFromFireStore(task).timeout(
+                    Duration(seconds: 1),
+                    onTimeout: () {
+                      print('Task updated successfully');
+                      SnackBar(
+                        content: Text('Task updated successfully'),
+                        backgroundColor: AppColors.greenColor,
+                      );
+                    },
+                  );
 
                   // // Go back to the home screen
                   Navigator.pop(context);

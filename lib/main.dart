@@ -17,14 +17,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseFirestore.instance.disableNetwork();
+  // await FirebaseFirestore.instance.disableNetwork();
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-      create: (context) => AppConfigProvider(),
+      create: (_) => AppConfigProvider(),
     ),
     ChangeNotifierProvider(
-      create: (context) => ListProvider(),
+      create: (_) => ListProvider(),
     )
   ], child: MyApp()));
 }
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
     var provider = Provider.of<AppConfigProvider>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: LoginScreen.routeName,
+      initialRoute: HomeScreen.routeName,
       routes: {
         HomeScreen.routeName: (context) => HomeScreen(),
         RegisterScreen.routeName: (context) => RegisterScreen(),

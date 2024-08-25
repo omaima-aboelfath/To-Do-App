@@ -62,8 +62,21 @@ class ListProvider extends ChangeNotifier {
     getAllTasksFromFireStore();
     // notifyListeners();
   }
+
+  void updateTask(Task updatedTask) {
+    for (int i = 0; i < tasksList.length; i++) {
+      if (tasksList[i].id == updatedTask.id) {
+        tasksList[i] = updatedTask;
+        notifyListeners();
+        break; // Exit the loop once the task is found and updated
+      }
+    }
+    getAllTasksFromFireStore();
+  }
+
   // Future<void> updateTask(Task task) async {
   //   await FirebaseUtils.updateTaskFromFireStore(task);
   //   getAllTasksFromFireStore();
   // }
+
 }

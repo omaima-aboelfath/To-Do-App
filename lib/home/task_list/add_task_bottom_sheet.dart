@@ -178,12 +178,13 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         // after one sec will print
         Duration(seconds: 1),
         onTimeout: () {
+          print('task added successfully');
           Navigator.pop(context); // to close bottomSheet after adding task
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Task added successfully')),
           );
-          print('task added successfully');
-          print(task.id);
+
+          // print(task.id);
           // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
           listProvider
               .getAllTasksFromFireStore(); // update list when clicking the button
@@ -191,7 +192,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       );
     }
   }
-
 
   Future<void> showCalender() async {
     var chosenDate = await showDatePicker(

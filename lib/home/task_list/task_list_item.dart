@@ -1,10 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_app/app_colors.dart';
 import 'package:to_do_app/firebase_utils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:to_do_app/home/task_list/add_task_bottom_sheet.dart';
 import 'package:to_do_app/home/task_list/edit_task.dart';
 import 'package:to_do_app/model/task.dart';
 import 'package:to_do_app/providers/list_provider.dart';
@@ -51,17 +50,16 @@ class TaskListItem extends StatelessWidget {
               onPressed: (context) {
                 // edit task
                 Navigator.pushNamed(context, EditTask.routeName,
-                    arguments: task
-                    );
+                    arguments: task);
 
-                    // Task(
-                    //     title: task.title,
-                    //     description: task.description,
-                    //     dateTime: task.dateTime)
-                    // OR  {
-                    //   'title' : task.title,
-                    //   'description' : task.description
-                    // }
+                // Task(
+                //     title: task.title,
+                //     description: task.description,
+                //     dateTime: task.dateTime)
+                // OR  {
+                //   'title' : task.title,
+                //   'description' : task.description
+                // }
               },
               backgroundColor: AppColors.greyColor,
               foregroundColor: AppColors.whiteColor,
@@ -84,7 +82,9 @@ class TaskListItem extends StatelessWidget {
             children: [
               Container(
                 margin: EdgeInsets.all(10),
-                color: AppColors.primaryColor,
+                color: task.isDone == true
+                    ? AppColors.greenColor
+                    : AppColors.primaryColor,
                 height: MediaQuery.of(context).size.height * 0.1,
                 width: 4,
               ),
@@ -95,10 +95,10 @@ class TaskListItem extends StatelessWidget {
                   Text(
                     // 'task1',
                     task.title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(color: AppColors.primaryColor),
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: task.isDone == true
+                            ? AppColors.greenColor
+                            : AppColors.primaryColor),
                   ),
                   Text(
                     // 'task1 description',
@@ -117,10 +117,22 @@ class TaskListItem extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
-                      color: AppColors.primaryColor),
+                      color: task.isDone == true
+                          ? AppColors.greenColor
+                          : AppColors.primaryColor),
                   child: IconButton(
-                    onPressed: () {
-                      
+                    onPressed: () async {
+                      // If isDone is true, it will become false, and vice versa. 
+                      // This ensures that clicking the button again will return the task to its initial state.
+                      task.isDone = !task.isDone;
+                      // Update task in Firestore
+                      await FirebaseFirestore.instance
+                          .collection('tasks')
+                          .doc(task.id)
+                          .update({'isDone': task.isDone});
+                      // Notify listeners (Provider) to update UI
+                      Provider.of<ListProvider>(context, listen: false)
+                          .updateTask(task);
                     },
                     icon: Icon(
                       Icons.check,

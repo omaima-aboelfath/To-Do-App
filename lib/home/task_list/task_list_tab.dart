@@ -27,9 +27,9 @@ class _TaskListTabState extends State<TaskListTab> {
   Widget build(BuildContext context) {
     var listProvider = Provider.of<ListProvider>(context);
     // One-time read
-    if (listProvider.tasksList.isEmpty) {
-      listProvider.getAllTasksFromFireStore();
-    }
+    // if (listProvider.tasksList.isEmpty) {
+    listProvider.getAllTasksFromFireStore();
+    // }
     return Container(
         child: Column(
       children: [

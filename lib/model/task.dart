@@ -1,5 +1,4 @@
 // data class
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Task {
   static const String collectionName = 'tasks';

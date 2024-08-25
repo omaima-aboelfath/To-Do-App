@@ -45,5 +45,7 @@ class FirebaseUtils {
       'description' : task.description,
       'dateTime' : task.dateTime
     });
+
+    
   }
 }
