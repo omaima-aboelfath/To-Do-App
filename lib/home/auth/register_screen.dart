@@ -1,8 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:to_do_app/app_colors.dart';
+import 'package:to_do_app/dialog_utils.dart';
+import 'package:to_do_app/firebase_utils.dart';
 import 'package:to_do_app/home/auth/custom_text_form_field.dart';
 import 'package:to_do_app/home/auth/login_screen.dart';
+import 'package:to_do_app/home/home_screen.dart';
+import 'package:to_do_app/model/my_user.dart';
+import 'package:to_do_app/providers/user_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String routeName = 'register_screen';
@@ -14,14 +20,11 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController nameController = TextEditingController();
 
-  TextEditingController emailController =
-      TextEditingController();
+  TextEditingController emailController = TextEditingController();
 
-  TextEditingController passwordController =
-      TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
-  TextEditingController confirmPasswordController =
-      TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
   var formKey = GlobalKey<FormState>(); // to access data of form
   bool _obscurePassword = true;
@@ -153,7 +156,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   padding: const EdgeInsets.all(10),
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, LoginScreen.routeName);
+                      Navigator.pushReplacementNamed(
+                          context, LoginScreen.routeName);
                     },
                     child: Text(
                       'Already have an account? Login',
@@ -171,42 +175,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // loop on every validator in text form field and see if its valid or not
     // if return null => valid = true
     if (formKey.currentState?.validate() == true) {
+      //todo: show loading
+      DialogUtils.showLoading(
+          context: context,
+          loadingLabel: 'Loading...',
+          barrierDismissible: false);
       try {
         final credential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
-        print("Register Successfully");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Register successfully'),
-            backgroundColor: AppColors.greenColor,
-          ),
+        MyUser myUser = MyUser(
+            id: credential.user?.uid ?? '',
+            name: nameController.text,
+            email: emailController.text);
+        print('before database');
+        await FirebaseUtils.addUserToFireStore(myUser);
+        print('after database');
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.updateUser(myUser);
+        //todo: hide loading
+        DialogUtils.hideLoading(context);
+        //show message
+        DialogUtils.showMessage(
+          context: context,
+          message: 'Register Successfully',
+          posAction: () {
+            Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+          },
+          posActionName: 'Ok',
+          title: 'Success',
         );
+        print("Register Successfully");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('Register successfully'),
+        //     backgroundColor: AppColors.greenColor,
+        //   ),
+        // );
         print(credential.user?.uid ?? "");
+        // Navigator.pushReplacementNamed(context, HomeScreen.routeName);
       } on FirebaseAuthException catch (e) {
         // if (e.code == 'weak-password') {
         //   print('The password provided is too weak.');
         // } else
         // compare between code of error exception(e) with string that specified by FirebaseAuthException
         if (e.code == 'email-already-in-use') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('The account already exists for that email.'),
-              backgroundColor: AppColors.redColor,
-            ),
-          );
+          //todo: hide loading
+          DialogUtils.hideLoading(context);
+          //show message
+          DialogUtils.showMessage(
+              context: context,
+              message: 'The account already exists for that email.',
+              title: 'Error',
+              posActionName: 'Ok');
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: Text('The account already exists for that email.'),
+          //     backgroundColor: AppColors.redColor,
+          //   ),
+          // );
           print('The account already exists for that email.');
         }
       } catch (e) {
+        //todo: hide loading
+        DialogUtils.hideLoading(context);
+        //show message
+        DialogUtils.showMessage(
+            context: context,
+            message: e.toString(),
+            title: 'Error',
+            posActionName: 'Ok');
         print(e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: AppColors.redColor,
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(e.toString()),
+        //     backgroundColor: AppColors.redColor,
+        //   ),
+        // );
       }
     }
   }

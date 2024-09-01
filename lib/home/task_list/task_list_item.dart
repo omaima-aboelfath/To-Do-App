@@ -7,6 +7,7 @@ import 'package:to_do_app/firebase_utils.dart';
 import 'package:to_do_app/home/task_list/edit_task.dart';
 import 'package:to_do_app/model/task.dart';
 import 'package:to_do_app/providers/list_provider.dart';
+import 'package:to_do_app/providers/user_provider.dart';
 
 class TaskListItem extends StatelessWidget {
   // object from model to access title & desc of task
@@ -15,6 +16,7 @@ class TaskListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var listProvider = Provider.of<ListProvider>(context);
+    var userProvider = Provider.of<UserProvider>(context);
     return Container(
       margin: EdgeInsets.all(10),
       child: Slidable(
@@ -30,12 +32,25 @@ class TaskListItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
               onPressed: (context) {
                 // delete task
-                FirebaseUtils.deleteTaskFromFireStore(task, task.id).timeout(
+                FirebaseUtils.deleteTaskFromFireStore(
+                        task, task.id, userProvider.currentUser!.id)
+                    // online
+                    .then(
+                  (value) {
+                    print('task deleted successfully');
+                    // print list after deleting task
+                    listProvider
+                        .getAllTasksFromFireStore(userProvider.currentUser!.id);
+                  },
+                )
+                    // offline
+                    .timeout(
                   Duration(seconds: 1),
                   onTimeout: () {
                     print('task deleted successfully');
                     // print list after deleting task
-                    listProvider.getAllTasksFromFireStore();
+                    listProvider
+                        .getAllTasksFromFireStore(userProvider.currentUser!.id);
                   },
                 );
               },
@@ -118,28 +133,51 @@ class TaskListItem extends StatelessWidget {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: task.isDone == true
-                          ? AppColors.greenColor
+                          ? AppColors.whiteColor
                           : AppColors.primaryColor),
-                  child: IconButton(
-                    onPressed: () async {
-                      // If isDone is true, it will become false, and vice versa. 
-                      // This ensures that clicking the button again will return the task to its initial state.
-                      task.isDone = !task.isDone;
-                      // Update task in Firestore
-                      await FirebaseFirestore.instance
-                          .collection('tasks')
-                          .doc(task.id)
-                          .update({'isDone': task.isDone});
-                      // Notify listeners (Provider) to update UI
-                      Provider.of<ListProvider>(context, listen: false)
-                          .updateTask(task);
-                    },
-                    icon: Icon(
-                      Icons.check,
-                      color: AppColors.whiteColor,
-                      size: 35,
-                    ),
-                  ))
+                  child: task.isDone
+                      ? TextButton(
+                          onPressed: () async {
+                            // Toggle isDone state
+                            task.isDone = !task.isDone;
+                            // Update task in Firestore
+                            await FirebaseFirestore.instance
+                                .collection('tasks')
+                                .doc(task.id)
+                                .update({'isDone': task.isDone});
+                            // Notify listeners (Provider) to update UI
+                            Provider.of<ListProvider>(context, listen: false)
+                                .updateTask(task, userProvider.currentUser!.id);
+                          },
+                          child: Text(
+                            "Done!",
+                            style: TextStyle(
+                              color: AppColors.greenColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
+                        )
+                      : IconButton(
+                          onPressed: () async {
+                            // If isDone is true, it will become false, and vice versa.
+                            // This ensures that clicking the button again will return the task to its initial state.
+                            task.isDone = !task.isDone;
+                            // Update task in Firestore
+                            await FirebaseFirestore.instance
+                                .collection('tasks')
+                                .doc(task.id)
+                                .update({'isDone': task.isDone});
+                            // Notify listeners (Provider) to update UI
+                            Provider.of<ListProvider>(context, listen: false)
+                                .updateTask(task, userProvider.currentUser!.id);
+                          },
+                          icon: Icon(
+                            Icons.check,
+                            color: AppColors.whiteColor,
+                            size: 35,
+                          ),
+                        ))
             ],
           ),
         ),

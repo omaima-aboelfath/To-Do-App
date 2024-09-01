@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:to_do_app/app_colors.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:to_do_app/firebase_utils.dart';
 import 'package:to_do_app/model/task.dart';
+import 'package:to_do_app/providers/list_provider.dart';
+import 'package:to_do_app/providers/user_provider.dart';
 
 class EditTask extends StatefulWidget {
   static const String routeName = 'edit_task';
@@ -35,6 +38,8 @@ class _EditTaskState extends State<EditTask> {
     detailsController = TextEditingController(text: task.description);
     selectDate = task.dateTime;
 
+    var userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: MediaQuery.of(context).size.height * 0.15,
@@ -43,114 +48,127 @@ class _EditTaskState extends State<EditTask> {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.blackDarkColor
-              : AppColors.whiteColor,
-        ),
-        margin: EdgeInsets.all(20),
-        padding: EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Text(
-                'Edit Task',
-                // AppLocalizations.of(context)!.edit_task,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: titleController,
-                decoration: InputDecoration(
-                    labelText: 'Enter your task title',
-                    // AppLocalizations.of(context)!.this_is_title,
-                    labelStyle: Theme.of(context).textTheme.displaySmall),
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.whiteColor
-                      : AppColors.blackColor,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: detailsController,
-                decoration: InputDecoration(
-                    labelText: 'Task details',
-                    // AppLocalizations.of(context)!.task_details,
-                    labelStyle: Theme.of(context).textTheme.displaySmall),
-                maxLines: 3,
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.whiteColor
-                      : AppColors.blackColor,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                // 'Select date',
-                AppLocalizations.of(context)!.select_date,
-                style: GoogleFonts.inter(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.greyColor
-                        : AppColors.blackColor),
-              ),
-            ),
-            Center(
-              child: InkWell(
-                onTap: () {
-                  showCalender();
-                },
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.blackDarkColor
+                : AppColors.whiteColor,
+          ),
+          margin: EdgeInsets.all(20),
+          padding: EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
                 child: Text(
-                  '${selectDate.day} - ${selectDate.month} - ${selectDate.year}',
+                  'Edit Task',
+                  // AppLocalizations.of(context)!.edit_task,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                      labelText: 'Enter your task title',
+                      // AppLocalizations.of(context)!.this_is_title,
+                      labelStyle: Theme.of(context).textTheme.displaySmall),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.whiteColor
+                        : AppColors.blackColor,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: detailsController,
+                  decoration: InputDecoration(
+                      labelText: 'Task details',
+                      // AppLocalizations.of(context)!.task_details,
+                      labelStyle: Theme.of(context).textTheme.displaySmall),
+                  maxLines: 3,
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.whiteColor
+                        : AppColors.blackColor,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  // 'Select date',
+                  AppLocalizations.of(context)!.select_date,
                   style: GoogleFonts.inter(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w400,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? AppColors.greyColor
                           : AppColors.blackColor),
                 ),
               ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.2,
-            ),
-            FloatingActionButton(
-                onPressed: () {
-                  // Update the task with new data
-                  task.title = titleController.text;
-                  task.description = detailsController.text;
-                  task.dateTime = selectDate;
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    showCalender();
+                  },
+                  child: Text(
+                    '${selectDate.day} - ${selectDate.month} - ${selectDate.year}',
+                    style: GoogleFonts.inter(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.greyColor
+                            : AppColors.blackColor),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.2,
+              ),
+              FloatingActionButton(
+                  onPressed: () {
+                    // Update the task with new data
+                    task.title = titleController.text;
+                    task.description = detailsController.text;
+                    task.dateTime = selectDate;
 
-                  // Call updateTaskFromFireStore method
-                  FirebaseUtils.updateTaskFromFireStore(task).timeout(
-                    Duration(seconds: 1),
-                    onTimeout: () {
+                    // Call updateTaskFromFireStore method
+                    FirebaseUtils.updateTaskFromFireStore(task, userProvider.currentUser!.id)
+                    .then((value) {
                       print('Task updated successfully');
-                      SnackBar(
-                        content: Text('Task updated successfully'),
-                        backgroundColor: AppColors.greenColor,
-                      );
-                    },
-                  );
+                        SnackBar(
+                          content: Text('Task updated successfully'),
+                          backgroundColor: AppColors.greenColor,
+                        );
+                    },)
+                    .timeout(
+                      Duration(seconds: 1),
+                      onTimeout: () {
+                        print('Task updated successfully');
+                        SnackBar(
+                          content: Text('Task updated successfully'),
+                          backgroundColor: AppColors.greenColor,
+                        );
+                      },
+                    );
 
-                  // // Go back to the home screen
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'save changes',
-                  // AppLocalizations.of(context)!.save_changes,
-                  style: TextStyle(color: AppColors.whiteColor),
-                ))
-          ],
+                    // Go back to the home screen
+                    Navigator.pop(context);
+                    // Notify listeners (Provider) to update UI
+                    Provider.of<ListProvider>(context, listen: false)
+                        .updateTask(task, userProvider.currentUser!.id);
+                  },
+                  child: Text(
+                    'save changes',
+                    // AppLocalizations.of(context)!.save_changes,
+                    style: TextStyle(color: AppColors.whiteColor),
+                  ))
+            ],
+          ),
         ),
       ),
     );

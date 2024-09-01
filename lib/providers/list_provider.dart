@@ -10,11 +10,11 @@ class ListProvider extends ChangeNotifier {
 
   // functions
 
-  void getAllTasksFromFireStore() async {
+  void getAllTasksFromFireStore(String uId) async {
     // .get will return Future<QuerySnapshot<Task>> => return every thing in collection(docs) in firebase
     // use await on result because it returns => --Future--<QuerySnapshot<Task>>
     // use .snapshot instead of .get to apply realtime changes
-    var querySnapshot = await FirebaseUtils.getTasksCollection()
+    var querySnapshot = await FirebaseUtils.getTasksCollection(uId)
         .orderBy('dateTime', descending: true)
         .get(); //// get all tasks
     // we want to convert List<QueryDocumentSnapshot<Task>> => List<Task>
@@ -55,15 +55,15 @@ class ListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSelectDate(DateTime newDate) {
+  void changeSelectDate(DateTime newDate, String uId) {
     selectDate = newDate; // change the date to the selected date by user
     // we want when clicking on newDate calling getAllTasksFromFireStore because there we filtering based on selectedDates
     // we call it also after adding new task on bottom sheet to update list
-    getAllTasksFromFireStore();
+    getAllTasksFromFireStore(uId);
     // notifyListeners();
   }
 
-  void updateTask(Task updatedTask) {
+  void updateTask(Task updatedTask, String uId) {
     for (int i = 0; i < tasksList.length; i++) {
       if (tasksList[i].id == updatedTask.id) {
         tasksList[i] = updatedTask;
@@ -71,7 +71,7 @@ class ListProvider extends ChangeNotifier {
         break; // Exit the loop once the task is found and updated
       }
     }
-    getAllTasksFromFireStore();
+    getAllTasksFromFireStore(uId);
   }
 
   // Future<void> updateTask(Task task) async {

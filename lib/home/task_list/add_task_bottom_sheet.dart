@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:to_do_app/firebase_utils.dart';
 import 'package:to_do_app/model/task.dart';
 import 'package:to_do_app/providers/list_provider.dart';
+import 'package:to_do_app/providers/user_provider.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   // late String title ;
@@ -172,9 +173,23 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     // validate() has forloop to loop on validators that i make
     // if we return string => invalid => validate will return false
     if (formKey.currentState?.validate() == true) {
+      var userProvider = Provider.of<UserProvider>(context, listen: false);
       Task task =
           Task(title: title, description: description, dateTime: selectDate);
-      FirebaseUtils.addTaskToFireStore(task).timeout(
+      FirebaseUtils.addTaskToFireStore(task, userProvider.currentUser!.id)
+          // online
+          .then(
+        (value) {
+          print('task added successfully');
+          Navigator.pop(context); // to close bottomSheet after adding task
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Task added successfully')),
+          );
+          listProvider.getAllTasksFromFireStore(userProvider.currentUser!.id);
+        },
+      )
+          // offline
+          .timeout(
         // after one sec will print
         Duration(seconds: 1),
         onTimeout: () {
@@ -186,8 +201,8 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
           // print(task.id);
           // هيجيب الكولكشن كلها بما فيها المهمة الجديدة اللي اتضافت
-          listProvider
-              .getAllTasksFromFireStore(); // update list when clicking the button
+          listProvider.getAllTasksFromFireStore(userProvider
+              .currentUser!.id); // update list when clicking the button
         },
       );
     }

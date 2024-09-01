@@ -2,10 +2,12 @@ import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_app/app_colors.dart';
+import 'package:to_do_app/dialog_utils.dart';
 import 'package:to_do_app/firebase_utils.dart';
 import 'package:to_do_app/home/task_list/task_list_item.dart';
 import 'package:to_do_app/model/task.dart';
 import 'package:to_do_app/providers/list_provider.dart';
+import 'package:to_do_app/providers/user_provider.dart';
 
 /*
 tasksList changes in 2 places:
@@ -26,10 +28,16 @@ class _TaskListTabState extends State<TaskListTab> {
   @override
   Widget build(BuildContext context) {
     var listProvider = Provider.of<ListProvider>(context);
+    var userProvider = Provider.of<UserProvider>(context);
+
+    if (userProvider.currentUser == null) {
+      // Display a loading indicator or handle null user case
+      return Center(child: CircularProgressIndicator(color: AppColors.primaryColor,));
+    }
     // One-time read
-    // if (listProvider.tasksList.isEmpty) {
-    listProvider.getAllTasksFromFireStore();
-    // }
+    if (listProvider.tasksList.isEmpty) {
+    listProvider.getAllTasksFromFireStore(userProvider.currentUser!.id);
+    }
     return Container(
         child: Column(
       children: [
@@ -37,7 +45,7 @@ class _TaskListTabState extends State<TaskListTab> {
           initialDate: DateTime.now(),
           onDateChange: (selectedDate) {
             //`selectedDate` the new date selected.
-            listProvider.changeSelectDate(selectedDate);
+            listProvider.changeSelectDate(selectedDate, userProvider.currentUser!.id);
           },
           headerProps: EasyHeaderProps(
             monthPickerType: MonthPickerType.dropDown,
